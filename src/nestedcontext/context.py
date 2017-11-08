@@ -26,8 +26,8 @@ class ContextStack:
     def enter(self, contextscope: ContextScope):
         self.stack.append(contextscope)
 
-    def exit(self):
-        self.stack.pop()
+    def exit(self, contextscope: ContextScope):
+        self.stack.remove(contextscope)
 
     def lookup(self, variablename: str) -> typing.Any:
         for contextscope in reversed(self.stack):

@@ -5,28 +5,41 @@ from . import context
 
 
 @contextmanager
-def bind(stackname: typing.Optional[str]=None, conflicts_are_errors: bool=False, **kwargs):
+def bind(
+        stackname: typing.Optional[str]=None,
+        raise_on_conflicts: bool=False,
+        skip_on_conflicts: bool=False,
+        **kwargs):
     """
     Binds zero or more values to a nested context.  Once the context is exited, the binding is removed.
 
     If `stackname` is not provided, the value is bound to the default context.  If `stackname` is provided, the value is
     bound to that context.
 
-    if `conflicts_are_errors` is True, then `ValueError` is raised if an existing binding to the same variable name
+    If `raise_on_conflicts` is True, then `ValueError` is raised if an existing binding to the same variable name
     already exists in the context.
+
+    If `skip_on_conflicts` is True, then skip a binding if an existing binding to the same variable name already exists
+    in the context.
     """
     stack = context.ContextStack.get_contextstack(stackname)
-    if conflicts_are_errors:
+    if raise_on_conflicts or skip_on_conflicts:
+        skipped_keys = set()
         for varname in kwargs.keys():
             try:
                 stack.lookup(varname)
-                raise ValueError(f"{varname} is already bound.")
+                if raise_on_conflicts:
+                    raise ValueError(f"{varname} is already bound.")
+                else:
+                    skipped_keys.add(varname)
             except KeyError:
                 pass
+        for varname in skipped_keys:
+            del kwargs[varname]
     contextscope = context.ContextScope(**kwargs)
     stack.enter(contextscope)
     yield
-    stack.exit()
+    stack.exit(contextscope)
 
 
 __sentinel = object()

@@ -44,12 +44,22 @@ class TestNestedScope(unittest.TestCase):
         with self.assertRaises(KeyError):
             nestedcontext.inject('abc')
 
-    def test_nestedcontext_detect_conflicts(self):
+    def test_nestedcontext_raise_on_conflicts(self):
         with nestedcontext.bind(abc="def"):
             self.assertEqual(nestedcontext.inject('abc'), "def")
             with self.assertRaises(ValueError):
-                with nestedcontext.bind(abc="ghi", conflicts_are_errors=True):
+                with nestedcontext.bind(abc="ghi", raise_on_conflicts=True):
                     self.fail("Why am I here?")
+            self.assertEqual(nestedcontext.inject('abc'), "def")
+
+        with self.assertRaises(KeyError):
+            nestedcontext.inject('abc')
+
+    def test_nestedcontext_skip_on_conflicts(self):
+        with nestedcontext.bind(abc="def"):
+            self.assertEqual(nestedcontext.inject('abc'), "def")
+            with nestedcontext.bind(abc="ghi", skip_on_conflicts=True):
+                self.assertEqual(nestedcontext.inject('abc'), "def")
             self.assertEqual(nestedcontext.inject('abc'), "def")
 
         with self.assertRaises(KeyError):
