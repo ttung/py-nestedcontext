@@ -7,7 +7,7 @@ from setuptools import find_packages
 
 setup(
     name="nestedcontext",
-    version="0.0.1",
+    version="0.0.2",
     description="Nested context for scoped variables.",
     author="Tony Tung",
     author_email="tonytung@merly.org",

@@ -15,43 +15,43 @@ import nestedcontext
 
 class TestNestedScope(unittest.TestCase):
     def test_simplecontext(self):
-        with nestedcontext.nestedcontext(abc="def"):
-            self.assertEqual(nestedcontext.lookup('abc'), "def")
+        with nestedcontext.bind(abc="def"):
+            self.assertEqual(nestedcontext.inject('abc'), "def")
 
         with self.assertRaises(KeyError):
-            nestedcontext.lookup('abc')
+            nestedcontext.inject('abc')
 
     def test_context_names(self):
-        with nestedcontext.nestedcontext(abc="def"):
-            self.assertEqual(nestedcontext.lookup('abc'), "def")
-            with nestedcontext.nestedcontext(abc="ghi", stackname="otherstack"):
-                self.assertEqual(nestedcontext.lookup('abc'), "def")
-                self.assertEqual(nestedcontext.lookup('abc', stackname="otherstack"), "ghi")
+        with nestedcontext.bind(abc="def"):
+            self.assertEqual(nestedcontext.inject('abc'), "def")
+            with nestedcontext.bind(abc="ghi", stackname="otherstack"):
+                self.assertEqual(nestedcontext.inject('abc'), "def")
+                self.assertEqual(nestedcontext.inject('abc', stackname="otherstack"), "ghi")
 
         with self.assertRaises(KeyError):
-            nestedcontext.lookup('abc')
+            nestedcontext.inject('abc')
         with self.assertRaises(KeyError):
-            nestedcontext.lookup('abc', stackname="otherstack")
+            nestedcontext.inject('abc', stackname="otherstack")
 
     def test_nestedcontext(self):
-        with nestedcontext.nestedcontext(abc="def"):
-            self.assertEqual(nestedcontext.lookup('abc'), "def")
-            with nestedcontext.nestedcontext(abc="ghi"):
-                self.assertEqual(nestedcontext.lookup('abc'), "ghi")
+        with nestedcontext.bind(abc="def"):
+            self.assertEqual(nestedcontext.inject('abc'), "def")
+            with nestedcontext.bind(abc="ghi"):
+                self.assertEqual(nestedcontext.inject('abc'), "ghi")
 
         with self.assertRaises(KeyError):
-            nestedcontext.lookup('abc')
+            nestedcontext.inject('abc')
 
     def test_nestedcontext_detect_conflicts(self):
-        with nestedcontext.nestedcontext(abc="def"):
-            self.assertEqual(nestedcontext.lookup('abc'), "def")
+        with nestedcontext.bind(abc="def"):
+            self.assertEqual(nestedcontext.inject('abc'), "def")
             with self.assertRaises(ValueError):
-                with nestedcontext.nestedcontext(abc="ghi", conflicts_are_errors=True):
+                with nestedcontext.bind(abc="ghi", conflicts_are_errors=True):
                     self.fail("Why am I here?")
-            self.assertEqual(nestedcontext.lookup('abc'), "def")
+            self.assertEqual(nestedcontext.inject('abc'), "def")
 
         with self.assertRaises(KeyError):
-            nestedcontext.lookup('abc')
+            nestedcontext.inject('abc')
 
 
 if __name__ == '__main__':

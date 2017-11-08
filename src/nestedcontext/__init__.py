@@ -5,7 +5,7 @@ from . import context
 
 
 @contextmanager
-def nestedcontext(stackname: typing.Optional[str]=None, conflicts_are_errors: bool=False, **kwargs):
+def bind(stackname: typing.Optional[str]=None, conflicts_are_errors: bool=False, **kwargs):
     stack = context.ContextStack.get_contextstack(stackname)
     if conflicts_are_errors:
         for varname in kwargs.keys():
@@ -20,6 +20,6 @@ def nestedcontext(stackname: typing.Optional[str]=None, conflicts_are_errors: bo
     stack.exit()
 
 
-def lookup(variablename: str, stackname: typing.Optional[str]=None) -> typing.Any:
+def inject(variablename: str, stackname: typing.Optional[str]=None) -> typing.Any:
     stack = context.ContextStack.get_contextstack(stackname)
     return stack.lookup(variablename)
