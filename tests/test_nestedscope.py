@@ -33,6 +33,8 @@ class TestNestedScope(unittest.TestCase):
         with self.assertRaises(KeyError):
             nestedcontext.inject('abc', stackname="otherstack")
 
+        self.assertEqual("def", nestedcontext.inject('abc', stackname="otherstack", default="def"))
+
     def test_nestedcontext(self):
         with nestedcontext.bind(abc="def"):
             self.assertEqual(nestedcontext.inject('abc'), "def")
